@@ -85,7 +85,7 @@ class TestBaseDados {
 
         assertEquals(1, registosAlterados)
 
-        assertEquals(paises, getPaisesBaseDados(tabelaPaises, categoria.id))
+        assertEquals(paises, getPaisesBaseDados(tabelaPaises, paises.id))
 
         db.close()
     }
