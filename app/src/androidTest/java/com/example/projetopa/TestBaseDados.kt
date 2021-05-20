@@ -17,21 +17,18 @@ import org.junit.Before
  */
 @RunWith(AndroidJUnit4::class)
 class TestBaseDados {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.projetopa", appContext.packageName)
-    }
+        private fun getAppContext() = InstrumentationRegistry.getInstrumentation().targetContext
+        private fun getBdOpenHelper() = BdOpenHelper(getAppContext())
 
-    private fun insereCategoria(tabela: TabelaPaises, paises: Paises): Long {
+
+    private fun inserePaises(tabela: TabelaPaises, paises: Paises): Long {
         val id = tabela.insert(paises.toContentValues())
         assertNotEquals(-1, id)
 
         return id
     }
 
-    private fun getCategoriaBaseDados(tabela: TabelaPaises, id: Long): Paises {
+    private fun getPaisesBaseDados(tabela: TabelaPaises, id: Long): Paises {
         val cursor = tabela.query(
             TabelaPaises.TODAS_COLUNAS,
             "${BaseColumns._ID}=?",
@@ -62,10 +59,10 @@ class TestBaseDados {
         val db = getBdOpenHelper().writableDatabase
         val tabelaPaises = TabelaPaises(db)
 
-        val categoria = Paises(nome = "Portugal")
-        categoria.id = insereCategoria(tabelaPaises, categoria)
+        val paises = Paises(nome = "Portugal")
+        paises.id = inserePaises(tabelaPaises, paises)
 
-        assertEquals(categoria, getCategoriaBaseDados(tabelaPaises, categoria.id))
+        assertEquals(paises, getPaisesBaseDados(tabelaPaises, paises.id))
 
         db.close()
     }
@@ -76,19 +73,19 @@ class TestBaseDados {
         val tabelaPaises = TabelaPaises(db)
 
         val paises = Paises(nome = "portugal")
-        paises.id = insereCategoria(tabelaPaises, categoria)
+        paises.id = inserePaises(tabelaPaises, paises)
 
         paises.nome = "Ficção científica"
 
         val registosAlterados = tabelaPaises.update(
             paises.toContentValues(),
             "${BaseColumns._ID}=?",
-            arrayOf(categoria.id.toString())
+            arrayOf(paises.id.toString())
         )
 
         assertEquals(1, registosAlterados)
 
-        assertEquals(categoria, getCategoriaBaseDados(tabelaPaises, categoria.id))
+        assertEquals(paises, getPaisesBaseDados(tabelaPaises, categoria.id))
 
         db.close()
     }
@@ -99,7 +96,7 @@ class TestBaseDados {
         val tabelaPaises = TabelaPaises(db)
 
         val paises = Paises(nome = "teste")
-        paises.id = insereCategoria(tabelaPaises, paises)
+        paises.id = inserePaises(tabelaPaises, paises)
 
         val registosEliminados = tabelaPaises.delete(
             "${BaseColumns._ID}=?",
@@ -117,12 +114,10 @@ class TestBaseDados {
         val tabelaPaises = TabelaPaises(db)
 
         val paises = Paises(nome = "Portugal")
-        paises.id = insereCategoria(tabelaPaises, paises)
+        paises.id = inserePaises(tabelaPaises, paises)
 
-        assertEquals(paises, getCategoriaBaseDados(tabelaPaises, paises.id))
+        assertEquals(paises, getPaisesBaseDados(tabelaPaises, paises.id))
 
         db.close()
     }
-}
-
 }
